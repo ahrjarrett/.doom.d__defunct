@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: cl
+# key: cl
+# uuid: cl
+# --
+
+console.log('${1:value}', $1)
+  $0
