@@ -26,7 +26,6 @@
 ;;
 (use-package doom-themes
   :preface (defvar region-fg nil) ; this prevents a weird bug with doom themes
-  ;;:init (load-theme 'doom-snazzy t)
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t
@@ -38,7 +37,8 @@
 
 (use-package kaolin-themes
   :init
-  (load-theme 'doom-acario-light t)
+  ;; (load-theme 'kaolin-valley-light t)
+  (load-theme 'doom-snazzy t)
    :config
    (kaolin-treemacs-theme))
 
@@ -75,7 +75,7 @@
   (centaur-tabs-group-by-projectile-project)
   (setq centaur-tabs-set-icons t
         centaur-tabs-style "bar"
-        centaur-tabs-set-bar 'left
+        centaur-tabs-set-bar 'right
         x-underline-at-descent-line t
         centaur-tabs-height 32
         centaur-tabs-gray-out-icons 'buffer
