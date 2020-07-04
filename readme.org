@@ -1,0 +1,4 @@
+#+TITLE: ~/.doom.d
+
+literate config bc i'm a lightweight elisper, plus tangling is neat.
+
