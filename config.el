@@ -1,9 +1,9 @@
 (setq doom-font (font-spec :family "Fira Code" :size 16 :weight 'semi-bold))
 (setq doom-variable-pitch-font (font-spec :family "GT America" :weight 'bold :size 19))
 
-(setq doom-localleader-key "M-SPC")
-(setq doom-leader-alt-key "C-M-SPC")
-(setq doom-localleader-alt-key "S-M-SPC")
+(setq doom-localleader-key "M-SPC"
+      doom-leader-alt-key "C-M-SPC"
+      doom-localleader-alt-key "S-M-SPC")
 
 (setq user-full-name "Andrew Jarrett"
       user-mail-address "ahrjarrett@gmail.com")
@@ -29,7 +29,7 @@
 
 (use-package kaolin-themes
   :init
-  (load-theme 'leuven t))
+  (load-theme 'doom-snazzy t))
 
 (use-package editorconfig
 :config
@@ -101,7 +101,7 @@
   :after (typescript-mode company flycheck)
   :hook ((typescript-mode . setup-tide-mode)
          (typescript-mode . tide-hl-identifier-mode)
-         (typescript-mode . prettier-js-mode)
+         ;(typescript-mode . prettier-js-mode)
          (before-save . tide-format-before-save)
          (before-save . prettier-js-mode-hook)))
 
@@ -126,9 +126,31 @@
 ;; enable typescript-tslint checker
 (flycheck-add-mode 'typescript-tslint 'web-mode)
 
-(load! "bindings" doom-private-dir)
-
 ;;(add-to-list 'exec-path "/usr/local/bin/lein")
 (add-to-list 'exec-path "/usr/local/bin/rg")
 
 '(helm-completion-style 'emacs)
+
+;; make BACKSPACE behave like Ivy in Helm (go up a dir)
+(after! helm
+  (add-hook! 'helm-find-files-after-init-hook
+    (map! :map helm-find-files-map
+          "<DEL>" #'helm-find-files-up-one-level)))
+
+(load! "bindings" doom-private-dir)
+
+(load! "bindings" doom-private-dir)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("632694fd8a835e85bcc8b7bb5c1df1a0164689bc6009864faed38a9142b97057" default))
+ '(package-selected-packages '(helm-ag tide)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

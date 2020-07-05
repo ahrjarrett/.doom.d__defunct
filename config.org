@@ -1,8 +1,6 @@
 #+TITLE: Doom Emacs Config
 #+AUTHOR: Andrew Jarrett <ahrjarrett@gmail.com>
 
-;;; $DOOMDIR / config.el -* - lexical - binding: t; -* -
-
 * Finally moved to literate config
 
 <2020-07-04 Sat>
@@ -16,12 +14,12 @@
 (setq doom-variable-pitch-font (font-spec :family "GT America" :weight 'bold :size 19))
 #+END_SRC
 
-*** Leader Keys
+*** Leader Key Stuff
 
 #+BEGIN_SRC emacs-lisp
-(setq doom-localleader-key "M-SPC")
-(setq doom-leader-alt-key "C-M-SPC")
-(setq doom-localleader-alt-key "S-M-SPC")
+(setq doom-localleader-key "M-SPC"
+      doom-leader-alt-key "C-M-SPC"
+      doom-localleader-alt-key "S-M-SPC")
 #+END_SRC
 
 
@@ -33,9 +31,6 @@
 (setq display-line-numbers-type t)
 #+END_SRC
 
-
-
-
 *** Org Stuff
 
 #+BEGIN_SRC emacs-lisp
@@ -43,6 +38,7 @@
       org-bullets-bullet-list '("⁖"))
 (require 'org-tempo)
 #+END_SRC
+
 
 ** Packages
 
@@ -69,7 +65,7 @@
 
 (use-package kaolin-themes
   :init
-  (load-theme 'leuven t))
+  (load-theme 'doom-snazzy t))
 #+END_SRC
 
 *** editorconfig
@@ -178,7 +174,7 @@ Tide
   :after (typescript-mode company flycheck)
   :hook ((typescript-mode . setup-tide-mode)
          (typescript-mode . tide-hl-identifier-mode)
-         (typescript-mode . prettier-js-mode)
+         ;(typescript-mode . prettier-js-mode)
          (before-save . tide-format-before-save)
          (before-save . prettier-js-mode-hook)))
 
@@ -204,13 +200,6 @@ Tide
 (flycheck-add-mode 'typescript-tslint 'web-mode)
 #+END_SRC
 
-** Keybindings
-
-Load that shit from separate file:
-
-#+BEGIN_SRC emacs-lisp
-(load! "bindings" doom-private-dir)
-#+END_SRC
 
 ** Path
 
@@ -225,10 +214,32 @@ Keeping here for adding packages to emacs's executable path:
 
 #+BEGIN_SRC emacs-lisp
 '(helm-completion-style 'emacs)
+
+;; make BACKSPACE behave like Ivy in Helm (go up a dir)
+(after! helm
+  (add-hook! 'helm-find-files-after-init-hook
+    (map! :map helm-find-files-map
+          "<DEL>" #'helm-find-files-up-one-level)))
+#+END_SRC
+
+** Keybindings
+
+Load that shit from separate file:
+
+#+BEGIN_SRC emacs-lisp
+(load! "bindings" doom-private-dir)
+#+END_SRC
+
+Load that shit from separate file:
+
+#+BEGIN_SRC emacs-lisp
+(load! "bindings" doom-private-dir)
 #+END_SRC
 
 
-**** Old comments
+** TODO: Remove comments
+
+*** Old comments
 
 #+BEGIN_SRC
 ;; Here are some additional functions/macros that could help you configure Doom:
@@ -254,7 +265,7 @@ Keeping here for adding packages to emacs's executable path:
 ;; If there is more than one, they won't work right.
 #+END_SRC
 
-**** Old custom-styles from config.el
+*** Old custom-styles from config.el
 #+BEGIN_SRC
 ;;'(ansi-color-faces-vector
 ;;  [default default default italic underline success warning error])

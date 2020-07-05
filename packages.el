@@ -64,3 +64,9 @@
 (package! company)
 (package! web-mode)
 (package! graphql-mode)
+
+(package! helm-ag)
+
+;;(package! ox-jira)
+;;(package! org-jira)
+

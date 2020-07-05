@@ -52,3 +52,54 @@
                  (fboundp 'evil-jump-item)
                  #'evil-jump-item))
 
+
+;; TODO: Remove <SPC+*>
+;;       Stop it from calling +default/search-project-for-symbol-at-point
+;;       Make it us helm-projectile-ag instead
+(map! :n :map doom-leader-map :leader "*" 'helm-projectile-ag)
+
+;;; ORG-MODE MAP:
+
+;; TODO: org-next-visible-heading
+;;
+;; CURRENT STATE:
+;;evil-motion-state-map (
+;;evil-backward-sentence-begin
+;;
+;;
+;;evil-motion-state-map )
+;;evil-org-forward-sentence
+;;
+;;map (
+;;org-previous-visible-heading
+;;map )
+;;org-next-visible-heading
+
+;Error in private config: bindings.el, (error Key sequence M-SPC p s starts with non-prefix key M-SPC p)
+
+;; (after! org
+;;   (map! :localleader :map org-mode-map
+        ;; :desc "Eval Block" "e" 'ober-eval-block-in-repl
+        ;; (:prefix "SPC" :desc "Tags" "t" 'org-set-tags
+         ;; :desc "Roam Bibtex" "b" 'orb-note-actions
+         ;; (:prefix ("p" . "Properties")
+         ;;  :desc "Set" "s" 'org-set-property
+         ;;  :desc "Delete" "d" 'org-delete-property
+         ;;  :desc "Actions" "a" 'org-property-action)
+         ;; (:prefix ("i" . "Insert")
+         ;; :desc "Link/Image" "l" 'org-insert-link
+         ;; :desc "Item" "o" 'org-toggle-item
+         ;; :desc "Citation" "c" 'org-ref-helm-insert-cite-link
+         ;; :desc "Footnote" "f" 'org-footnote-action
+         ;; ;; :desc "Screenshot" "s" 'org-download-screenshot
+         ;; :desc "Table" "t" 'org-table-create-or-convert-from-region
+         ;; (:prefix ("h" . "Headings")
+         ;;  :desc "Normal" "h" 'org-insert-heading
+         ;;  :desc "Todo" "t" 'org-insert-todo-heading
+         ;;  (:prefix ("s" . "Subheadings")
+         ;;   :desc "Normal" "s" 'org-insert-subheading
+         ;;   :desc "Todo" "t" 'org-insert-todo-subheading))
+         ;; (:prefix ("e" . "Exports")
+         ;;  :desc "Dispatch" "d" 'org-export-dispatch))))
+
+
