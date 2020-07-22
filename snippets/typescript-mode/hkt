@@ -1,0 +1,34 @@
+# -*- mode: snippet -*-
+# name: hkt
+# key: hkt 
+# uuid: hkt
+# --
+
+/**
+ * Type defunctionalization; implementation for 1 type class parameter:
+ * export interface HKT<URI, A> { readonly _URI: URI, readonly _A: A }
+ * export interface URItoKind<A> {}
+ * export interface URIS = keyof URItoKind<any>
+ * export type Kind<URI extends URIS, A> = URI extends URIS ? URItoKIND<A>[URI] : any
+ */
+
+import { $2 } from 'fp-ts/lib/${2:module}'
+
+export const URI = '${1:instanceName}'
+export type URI = typeof URI
+
+declare module 'fp-ts/lib/${module}' {
+  interface URItoKind<A> {
+  readonly $1: '$1'<A>
+  }
+}
+
+export type '${3}'<A> = ${3:declaration}
+
+export const '${1}': '${2}'<URI> = {
+  URI,
+  map: (ma, t) => f(ma)
+}
+
+$0
+

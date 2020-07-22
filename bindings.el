@@ -6,6 +6,7 @@
 (map!
       :g "s-l" nil
       :g "s-L" nil
+      :g "s-," nil
       :g "M-p" nil
       :g "s-h" 'evil-window-left
       :g "s-l" 'evil-window-right
@@ -17,9 +18,14 @@
       :g "s-K" 'evil-window-move-very-top
       :g "s-d" 'evil-window-split
       :g "s-D" 'evil-window-vsplit
-      :g "s-r" 'evil-window-vsplit
+      :g "s-," 'evil-window-decrease-width
+      :g "s-." 'evil-window-increase-width
+      :g "s-<" 'evil-window-decrease-height
+      :g "s->" 'evil-window-increase-height
+      
+      ;; :g "s-r" 'evil-window-vsplit
+      ;; :g "s-r" 'rjsx-mode
       :g "s-f" 'treemacs
-      :g "s-r" 'rjsx-mode
       :g "s-p" 'evil-switch-to-windows-last-buffer
       :g "s-W" '+workspace/close-window-or-workspace
       :g "s-w" 'doom/kill-this-buffer-in-all-windows
@@ -29,6 +35,16 @@
       :g "s-{" 'centaur-tabs-backward
       :g "s-}" 'centaur-tabs-forward
       :g "<s-escape>" 'centaur-tabs-backward-group)
+
+
+      :g "s-r" 'org-roam-mode
+      :g "s-R" 'org-roam-find-file
+      ;; :g "s-r g" 'org-roam-graph-show
+
+      (map! :nv :map org-mode-map
+      "C-s-r" 'org-roam-insert)
+
+(add-hook 'after-init-hook 'org-roam-mode)
 
 
 ;; (map! :nv "/" 'swiper)
@@ -55,27 +71,39 @@
 
 ;; TODO: Remove <SPC+*>
 ;;       Stop it from calling +default/search-project-for-symbol-at-point
-;;       Make it us helm-projectile-ag instead
+;;       Make it use helm-projectile-ag instead
 (map! :n :map doom-leader-map :leader "*" 'helm-projectile-ag)
+
+
+(after! org-roam
+  (map! :leader
+        :prefix "r"
+        :desc "org-roam"                   "r"  #'org-roam
+        :desc "org-roam-date"              "d"  #'org-roam-date
+        :desc "org-roam-insert"            "i"  #'org-roam-insert
+        :desc "org-roam-capture"           "c"  #'org-roam-capture
+        :desc "org-roam-find-file"         "f"  #'org-roam-find-file
+        :desc "org-roam-show-graph"        "g"  #'org-roam-show-graph
+        :desc "org-roam-jump-to-index"     "j"  #'org-roam-jump-to-index
+        :desc "org-roam-switch-to-buffer"  "b"  #'org-roam-switch-to-buffer))
+
 
 ;;; ORG-MODE MAP:
 
 ;; TODO: org-next-visible-heading
-;;
-;; CURRENT STATE:
+;; Current State:
 ;;evil-motion-state-map (
 ;;evil-backward-sentence-begin
-;;
 ;;
 ;;evil-motion-state-map )
 ;;evil-org-forward-sentence
 ;;
+;; Desired State: 
 ;;map (
 ;;org-previous-visible-heading
 ;;map )
 ;;org-next-visible-heading
 
-;Error in private config: bindings.el, (error Key sequence M-SPC p s starts with non-prefix key M-SPC p)
 
 ;; (after! org
 ;;   (map! :localleader :map org-mode-map

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: cl-surround (logger)
+# key: clS
+# uuid: cl-surround
+# binding: C-c l
+# --
+console.log(\``yas-selected-text`${1:refine?}\`, `yas-selected-text`$1)
+$0

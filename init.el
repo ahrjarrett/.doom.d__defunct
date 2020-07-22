@@ -18,18 +18,16 @@
 (setq explicit-shell-file-name "/usr/local/bin/fish")
 
 (doom! :input
-       ;;chinese
-       ;;japanese
 
        :completion
-       company           ; the ultimate code completion backend
-       helm              ; the *other* search engine for love and life
-       ;;ivy
+       company             ; the ultimate code completion backend
+       helm                ; the *other* search engine for love and life
 
        :ui
        doom                ; what makes DOOM look the way it does
        hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        modeline            ; snazzy, Atom-inspired modeline, plus API
+       nav-flash           ; blink cursor line after big motions
        ophints             ; highlight the region an operation acts on
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
        pretty-code         ; ligatures or substitute text with pretty symbols
@@ -43,7 +41,6 @@
        ;;fill-column       ; a `fill-column' indicator
        ;;hydra
        ;;indent-guides     ; highlighted indent columns
-       ;;nav-flash         ; blink cursor line after big motions
        ;;neotree           ; a project drawer, like NERDTree for vim
        ;;tabs              ; an tab bar for Emacs
        ;;unicode           ; extended unicode support for various languages
@@ -67,9 +64,9 @@
        :emacs
        dired               ; making dired pretty [functional]
        electric            ; smarter, keyword-based electric-indent
+       undo                ; persistent, smarter undo for your inevitable mistakes
        vc                  ; version-control and Emacs, sitting in a tree
        ;;ibuffer           ; interactive buffer management
-       ;;undo              ; persistent, smarter undo for your inevitable mistakes
 
        :term
        eshell              ; the elisp shell that works everywhere
@@ -78,7 +75,8 @@
        ;;vterm             ; the best terminal emulation in Emacs
 
        :checkers
-       syntax              ; tasing you for every semicolon you forget
+       ;;(syntax +childframe)              ; tasing you for every semicolon you forget
+       syntax
        ;;spell             ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
@@ -106,9 +104,14 @@
 
        :lang
        emacs-lisp          ; drown in parentheses
+       javascript          ; all(hope(abandon(ye(who(enter(here))))))
        json                ; At least it ain't XML
        markdown            ; writing docs for people to ignore
-       org                 ; organize your plain life in plain text
+       (org
+        +roam
+        +journal
+        +present
+        +pomodoro)         ; organize your plain life in plain text
        rest                ; Emacs as a REST client
        scala               ; java, but good
        sh                  ; she sells {ba,z,fi}sh shells on the C xor
@@ -134,7 +137,6 @@
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ;
        ;;(java +meghanada) ; the poster child for carpal tunnel syndrome
-       ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia             ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)
        ;;latex             ; writing papers in Emacs has never been so fun
@@ -174,4 +176,5 @@
        ;;twitter           ; twitter client https://twitter.com/vnought
 
        :config
-       (default +bindings +smartparens) literate)
+       (default +bindings +smartparens)
+       literate)

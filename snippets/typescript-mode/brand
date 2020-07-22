@@ -1,0 +1,60 @@
+# -*- mode: snippet -*-
+# name: branded type (io-ts)
+# key: brand
+# uuid: brand
+# --
+
+import * as t from 'io-ts'
+import { Option, chain, map, none, some } from 'fp-ts/lib/Option'
+
+export interface ${1:New Brand}Brand {
+  readonly $1: unique symbol
+}
+
+/*** might need this too: ***/
+//export type $1 = SomeType & $1 Brand
+
+// runtime check implemented as a custom type guard
+function is(u: unknown): u is $1 {
+  return $2
+}
+
+export function make$1(u: unknown): Option<$1> {
+  return is(u) ? some(u) : none
+}
+
+/*** if you need to combine multiple brands: ***/
+/*** do you need to use multiple brands? ***/
+// ${3: Alt Brand}:
+//interface ${4: BrandsIntersection} {
+//  ${1:$(downcase yas-text)}: $1
+//  ${3:$(downcase yas-text)}: $3
+//}
+//
+//function ${4:$(downcase yas-text)}(${1:$(downcase yas-text)}: $1, ${3:$(downcase yas-text)}: $3): $4 {
+//  return { ${1:$(downcase yas-text)}, ${3:$(downcase yas-text)} }
+//}
+//
+//export function make$3(u: unknown): Option<$3> {
+//  return is(u) ? some(u) : none
+//}
+
+
+// you should probably instantiate it:
+//const good$1 = make$1(${5: [BRAND-1]: <valid value> })
+//const bad$1 = make$1(${6: [BRAND-1]: Wrong! })
+//const good$3 = make$3(${7: [BRAND-2]: <valid value> })
+//const bad$3 = make$3(${8: [BRAND-2]: Wrong! })
+
+// usage:
+chain(good$1, a => map(good$3, o => ${4:$(downcase yas-text)}(a, o)))
+// => some({ ${1:$(downcase yas-text)}: $1, ${3:$(downcase yas-text)}: $3 })
+chain(good$1, a => map(bad$3, o => ${4:$(downcase yas-text)}(a, o)))
+// => none
+chain(bad$1, a => map(good$3, o => ${4:$(downcase yas-text)}(a, o)))
+// => none
+chain(bad$1, a => map(bad$3, o => ${4:$(downcase yas-text)}(a, o)))
+// => none
+
+$0
+

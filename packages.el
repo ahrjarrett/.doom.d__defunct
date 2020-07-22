@@ -51,7 +51,6 @@
 (package! kaolin-themes
   :recipe (:host github :repo "ogdenwebb/emacs-kaolin-themes"))
 
-
 (package! editorconfig)
 (package! treemacs)
 (package! centaur-tabs)
@@ -66,6 +65,11 @@
 (package! graphql-mode)
 
 (package! helm-ag)
+(package! company-org-roam
+   :recipe (:host github :repo "jethrokuan/company-org-roam"))
+;; (org +roam)
+;;(package! org-roam-protocol)
+;; (package! org-roam)
 
 ;;(package! ox-jira)
 ;;(package! org-jira)

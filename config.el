@@ -13,6 +13,48 @@
       org-bullets-bullet-list '("⁖"))
 (require 'org-tempo)
 
+(setenv "NODE_PATH"
+  (concat
+    (getenv "HOME") "/org/node_modules"  ":"
+    (getenv "NODE_PATH")))
+
+(require 'ob-js)
+
+(add-to-list 'org-babel-load-languages '(js . t))
+(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
+(add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((js . t)))
+
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-graph-viewer "/usr/bin/open")
+  (setq org-roam-graph-executable "dot")
+  (setq org-roam-link-title-format "℞:%s")
+  (setq org-roam-index-file "~/roam/index.org")
+  (setq org-roam-completion-system 'helm)
+  :hook
+  (after-init . org-roam-mode)
+  :custom
+  (org-roam-directory "~/roam")
+  :config
+  (require 'org-roam-protocol))
+
+ (setq org-roam-capture-templates '(("d" "default" plain #'org-roam-capture--get-point "%?" :file-name "%<%Y%m%d%H%M%S>-${slug}" :head "#+title: ${title}
+" :unnarrowed t)))
+
+;;(use-package flycheck
+;;  :ensure t
+;;  :init (global-flycheck-mode)
+;;  :config
+;;  ;;Fixes issue where Flycheck temp files are picked up by webpack HMR, then crashing when removed, see: [[https://github.com/flycheck/flycheck/issues/1446#issuecomment-381131567][this github issue]]
+;;  ;;(setcar (memq 'source-inplace (flycheck-checker-get 'typescript-tslint 'command))
+;;  ;;      'source-original)
+;;  )
+
 (use-package treemacs
   :config (setq treemacs-is-never-other-window t))
 
@@ -29,7 +71,10 @@
 
 (use-package kaolin-themes
   :init
-  (load-theme 'doom-snazzy t))
+
+  (load-theme 'doom-challenger-deep t))
+  ;; (load-theme 'doom-nord-light t))
+  ;; (load-theme 'leuven' t))
 
 (use-package editorconfig
 :config
@@ -58,10 +103,23 @@
   (yas-global-mode t)
   :diminish yas-minor-mode)
 
-(use-package flycheck
-  :config
-  (setcar (memq 'source-inplace (flycheck-checker-get 'typescript-tslint 'command))
-        'source-original))
+(defun org-babel-execute:typescript (body params)
+  (org-babel-execute:js
+   (with-temp-buffer
+     (let* ((ts-file (concat (temporary-file-directory) (make-temp-name "script") ".ts"))
+            (js-file (replace-regexp-in-string ".ts$" ".js" ts-file)))
+       (insert body)
+       (write-region nil nil ts-file)
+       (call-process-shell-command (concat "npx tsc " (shell-quote-argument ts-file)))
+       (delete-region (point-min) (point-max))
+       (insert-file js-file)
+       (let ((js-source (buffer-substring (point-min) (point-max))))
+         (delete-file ts-file)
+         (delete-file js-file)
+         js-source)))
+   params))
+
+(defalias 'org-babel-execute:ts 'org-babel-execute:typescript)
 
 (use-package rjsx-mode
   :mode
@@ -87,21 +145,38 @@
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  ;;(flycheck-mode +1)
+  ;;(setq flycheck-check-syntax-automatically '(save mode-enabled))
   (setq-default typescript-indent-level 2)
   (eldoc-mode +1)
   (tide-hl-identifier-mode +1)
   (company-mode +1)
+  ;; (setq prettify-symbols-alist
+  ;;       (("import" . "⟻")
+  ;;        ("return" . "⟼")
+  ;;        ("for" . "∀")
+  ;;        ("||" . "∨")
+  ;;        ("&&" . "∧")
+  ;;        ("!" . "￢")
+  ;;        ("boolean" . "𝔹")
+  ;;        ("string" . "𝕊")
+  ;;        ("number" . "ℤ")
+  ;;        ("false" . "𝔽")
+  ;;        ("true" . "𝕋")
+  ;;        ("null" . "∅")
+  ;;        ("compose" . "∘")
+  ;;        ("() =>" . "λ")
+  ;;        ("function" . "ƒ")
+  ;;        ("is" . "∈")))
   ;; aligns annotation to the right hand side
   (setq company-tooltip-align-annotations t))
 
 (use-package tide
   :ensure t
-  :after (typescript-mode company flycheck)
+  ;;:after (typescript-mode company flycheck)
   :hook ((typescript-mode . setup-tide-mode)
          (typescript-mode . tide-hl-identifier-mode)
-         ;(typescript-mode . prettier-js-mode)
+         (typescript-mode . prettier-js-mode)
          (before-save . tide-format-before-save)
          (before-save . prettier-js-mode-hook)))
 
@@ -124,10 +199,12 @@
 (add-to-list  'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 
 ;; enable typescript-tslint checker
-(flycheck-add-mode 'typescript-tslint 'web-mode)
+;;(flycheck-add-mode 'typescript-tslint 'web-mode)
+;;(flycheck-list-errors)
 
 ;;(add-to-list 'exec-path "/usr/local/bin/lein")
 (add-to-list 'exec-path "/usr/local/bin/rg")
+(add-to-list 'exec-path "/usr/bin/sqlite3")
 
 '(helm-completion-style 'emacs)
 
@@ -138,19 +215,3 @@
           "<DEL>" #'helm-find-files-up-one-level)))
 
 (load! "bindings" doom-private-dir)
-
-(load! "bindings" doom-private-dir)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("632694fd8a835e85bcc8b7bb5c1df1a0164689bc6009864faed38a9142b97057" default))
- '(package-selected-packages '(helm-ag tide)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

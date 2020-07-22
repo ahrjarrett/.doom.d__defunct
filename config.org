@@ -1,4 +1,4 @@
-#+TITLE: Doom Emacs Config
+#+TITLE: Emacs Config [DOOM]
 #+AUTHOR: Andrew Jarrett <ahrjarrett@gmail.com>
 
 * Finally moved to literate config
@@ -39,8 +39,68 @@
 (require 'org-tempo)
 #+END_SRC
 
+Languages that org-babel will execute for us:
+
+#+BEGIN_SRC emacs-lisp
+(setenv "NODE_PATH"
+  (concat
+    (getenv "HOME") "/org/node_modules"  ":"
+    (getenv "NODE_PATH")))
+
+(require 'ob-js)
+
+(add-to-list 'org-babel-load-languages '(js . t))
+(org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
+(add-to-list 'org-babel-tangle-lang-exts '("js" . "js"))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((js . t)))
+#+END_SRC
+
+*** =org-roam=
+
+Build cache manually with ~M-x org-roam-db-build-cache~
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-graph-viewer "/usr/bin/open")
+  (setq org-roam-graph-executable "dot")
+  (setq org-roam-link-title-format "℞:%s")
+  (setq org-roam-index-file "~/roam/index.org")
+  (setq org-roam-completion-system 'helm)
+  :hook
+  (after-init . org-roam-mode)
+  :custom
+  (org-roam-directory "~/roam")
+  :config
+  (require 'org-roam-protocol))
+#+END_SRC
+
+Roam capture templates:
+
+#+BEGIN_SRC emacs-lisp
+ (setq org-roam-capture-templates '(("d" "default" plain #'org-roam-capture--get-point "%?" :file-name "%<%Y%m%d%H%M%S>-${slug}" :head "#+title: ${title}
+" :unnarrowed t)))
+#+END_SRC
+
 
 ** Packages
+
+*** Flycheck
+
+#+BEGIN_SRC emacs-lisp
+;;(use-package flycheck
+;;  :ensure t
+;;  :init (global-flycheck-mode)
+;;  :config
+;;  ;;Fixes issue where Flycheck temp files are picked up by webpack HMR, then crashing when removed, see: [[https://github.com/flycheck/flycheck/issues/1446#issuecomment-381131567][this github issue]]
+;;  ;;(setcar (memq 'source-inplace (flycheck-checker-get 'typescript-tslint 'command))
+;;  ;;      'source-original)
+;;  )
+#+END_SRC
 
 *** Treemacs
 
@@ -65,7 +125,10 @@
 
 (use-package kaolin-themes
   :init
-  (load-theme 'doom-snazzy t))
+
+  (load-theme 'doom-challenger-deep t))
+  ;; (load-theme 'doom-nord-light t))
+  ;; (load-theme 'leuven' t))
 #+END_SRC
 
 *** editorconfig
@@ -108,22 +171,29 @@
   :diminish yas-minor-mode)
 #+END_SRC
 
-*** Flycheck
+*** TypeScript (& JS)
 
-Fixes issue where Flycheck temp files are picked up by webpack HMR, then crashing when removed, see: [[https://github.com/flycheck/flycheck/issues/1446#issuecomment-381131567][this github issue]]
+Executing TS inside =org-mode= files:
 
 #+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :config
-  (setcar (memq 'source-inplace (flycheck-checker-get 'typescript-tslint 'command))
-        'source-original))
+(defun org-babel-execute:typescript (body params)
+  (org-babel-execute:js
+   (with-temp-buffer
+     (let* ((ts-file (concat (temporary-file-directory) (make-temp-name "script") ".ts"))
+            (js-file (replace-regexp-in-string ".ts$" ".js" ts-file)))
+       (insert body)
+       (write-region nil nil ts-file)
+       (call-process-shell-command (concat "npx tsc " (shell-quote-argument ts-file)))
+       (delete-region (point-min) (point-max))
+       (insert-file js-file)
+       (let ((js-source (buffer-substring (point-min) (point-max))))
+         (delete-file ts-file)
+         (delete-file js-file)
+         js-source)))
+   params))
+
+(defalias 'org-babel-execute:ts 'org-babel-execute:typescript)
 #+END_SRC
-
-#+BEGIN_SRC 
-
-#+END_SRC
-
-*** TypeScript (& JS)
 
 RJSX-mode (buggy)
 
@@ -160,21 +230,38 @@ Tide
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  ;;(flycheck-mode +1)
+  ;;(setq flycheck-check-syntax-automatically '(save mode-enabled))
   (setq-default typescript-indent-level 2)
   (eldoc-mode +1)
   (tide-hl-identifier-mode +1)
   (company-mode +1)
+  ;; (setq prettify-symbols-alist
+  ;;       (("import" . "⟻")
+  ;;        ("return" . "⟼")
+  ;;        ("for" . "∀")
+  ;;        ("||" . "∨")
+  ;;        ("&&" . "∧")
+  ;;        ("!" . "￢")
+  ;;        ("boolean" . "𝔹")
+  ;;        ("string" . "𝕊")
+  ;;        ("number" . "ℤ")
+  ;;        ("false" . "𝔽")
+  ;;        ("true" . "𝕋")
+  ;;        ("null" . "∅")
+  ;;        ("compose" . "∘")
+  ;;        ("() =>" . "λ")
+  ;;        ("function" . "ƒ")
+  ;;        ("is" . "∈")))
   ;; aligns annotation to the right hand side
   (setq company-tooltip-align-annotations t))
 
 (use-package tide
   :ensure t
-  :after (typescript-mode company flycheck)
+  ;;:after (typescript-mode company flycheck)
   :hook ((typescript-mode . setup-tide-mode)
          (typescript-mode . tide-hl-identifier-mode)
-         ;(typescript-mode . prettier-js-mode)
+         (typescript-mode . prettier-js-mode)
          (before-save . tide-format-before-save)
          (before-save . prettier-js-mode-hook)))
 
@@ -197,9 +284,9 @@ Tide
 (add-to-list  'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 
 ;; enable typescript-tslint checker
-(flycheck-add-mode 'typescript-tslint 'web-mode)
+;;(flycheck-add-mode 'typescript-tslint 'web-mode)
+;;(flycheck-list-errors)
 #+END_SRC
-
 
 ** Path
 
@@ -208,6 +295,7 @@ Keeping here for adding packages to emacs's executable path:
 #+BEGIN_SRC emacs-lisp
 ;;(add-to-list 'exec-path "/usr/local/bin/lein")
 (add-to-list 'exec-path "/usr/local/bin/rg")
+(add-to-list 'exec-path "/usr/bin/sqlite3")
 #+END_SRC
 
 ** Helm
@@ -230,102 +318,3 @@ Load that shit from separate file:
 (load! "bindings" doom-private-dir)
 #+END_SRC
 
-Load that shit from separate file:
-
-#+BEGIN_SRC emacs-lisp
-(load! "bindings" doom-private-dir)
-#+END_SRC
-
-
-** TODO: Remove comments
-
-*** Old comments
-
-#+BEGIN_SRC
-;; Here are some additional functions/macros that could help you configure Doom:
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c g k').
-;; This will open documentation for it, including demos of how they are used.
-;;
-;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
-;; they are implemented.
-;;(custom-set-variables
-;; custom-set-variables was added by Custom.
-;; If you edit it by hand, you could mess it up, so be careful.
-;; Your init file should contain only one such instance.
-;; If there is more than one, they won't work right.
-#+END_SRC
-
-*** Old custom-styles from config.el
-#+BEGIN_SRC
-;;'(ansi-color-faces-vector
-;;  [default default default italic underline success warning error])
-;; '(custom-safe-themes
-;;   '("fc0fe24e7f3d48ac9cf1f87b8657c6d7a5dd203d5dabd2f12f549026b4c67446" "643b4d181b6afa4306d65db76889d8b987e095ae8f262a4c71dd5669d39c9b09" "632694fd8a835e85bcc8b7bb5c1df1a0164689bc6009864faed38a9142b97057" "e2acbf379aa541e07373395b977a99c878c30f20c3761aac23e9223345526bcc" "68d8ceaedfb6bdd2909f34b8b51ceb96d7a43f25310a55c701811f427e9de3a3" "c499bf4e774b34e784ef5a104347b81c56220416d56d5fd3fd85df8704260aad" "c342ef444e7aca36f4b39a8e2848c4ba793d51c58fdb520b8ed887766ed6d40b" "7b3d184d2955990e4df1162aeff6bfb4e1c3e822368f0359e15e2974235d9fa8" default))
-;; '(hl-sexp-background-color "#efebe9"))
-;;(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-;;)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default default default italic underline success warning error])
- '(custom-safe-themes
-   '("e2acbf379aa541e07373395b977a99c878c30f20c3761aac23e9223345526bcc" "1de8de5dddd3c5138e134696180868490c4fc86daf9780895d8fc728449805f3" "0cb1b0ea66b145ad9b9e34c850ea8e842c4c4c83abe04e37455a1ef4cc5b8791" "9f9450547564423166a7d2de976c9ca712293170415ec78ed98d198748b44a90" "632694fd8a835e85bcc8b7bb5c1df1a0164689bc6009864faed38a9142b97057" "c342ef444e7aca36f4b39a8e2848c4ba793d51c58fdb520b8ed887766ed6d40b" default))
- '(fci-rule-color "#5B6268")
- '(hl-sexp-background-color "#efebe9")
- '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#51afef"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#98be65"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#3f444a"))
- '(objed-cursor-color "#ff6c6b")
- '(package-selected-packages '(tide))
- '(pdf-view-midnight-colors (cons "#bbc2cf" "#282c34"))
- '(pos-tip-background-color "#191F26")
- '(pos-tip-foreground-color "#d4d4d6")
- '(rustic-ansi-faces
-   ["#282c34" "#ff6c6b" "#98be65" "#ECBE7B" "#51afef" "#c678dd" "#46D9FF" "#bbc2cf"])
- '(vc-annotate-background "#282c34")
- '(vc-annotate-color-map
-   (list
-    (cons 20 "#98be65")
-    (cons 40 "#b4be6c")
-    (cons 60 "#d0be73")
-    (cons 80 "#ECBE7B")
-    (cons 100 "#e6ab6a")
-    (cons 120 "#e09859")
-    (cons 140 "#da8548")
-    (cons 160 "#d38079")
-    (cons 180 "#cc7cab")
-    (cons 200 "#c678dd")
-    (cons 220 "#d974b7")
-    (cons 240 "#ec7091")
-    (cons 260 "#ff6c6b")
-    (cons 280 "#cf6162")
-    (cons 300 "#9f585a")
-    (cons 320 "#6f4e52")
-    (cons 340 "#5B6268")
-    (cons 360 "#5B6268")))
- '(vc-annotate-very-old-color nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-#+END_SRC
