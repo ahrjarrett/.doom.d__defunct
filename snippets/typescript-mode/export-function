@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: export function
+# uuid: export-function
+# key: efn
+# --
+export function ${1:name} ${4:<T>}(${2:...args})${3::ReturnType} {
+  ${5:body}
+}

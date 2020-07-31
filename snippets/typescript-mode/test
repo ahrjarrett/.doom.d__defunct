@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: test (jest)
+# key:  test
+# uuid: test
+# --
+test('it $1', () => {
+  expect($2).toBe(false)
+})

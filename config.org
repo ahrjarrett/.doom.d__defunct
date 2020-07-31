@@ -126,9 +126,9 @@ Roam capture templates:
 (use-package kaolin-themes
   :init
 
-  (load-theme 'doom-challenger-deep t))
-  ;; (load-theme 'doom-nord-light t))
-  ;; (load-theme 'leuven' t))
+  (load-theme 'doom-nord-light t))
+  ;;(load-theme 'doom-challenger-deep t))
+  ;;(load-theme 'leuven' t))
 #+END_SRC
 
 *** editorconfig

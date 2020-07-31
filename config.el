@@ -72,9 +72,9 @@
 (use-package kaolin-themes
   :init
 
-  (load-theme 'doom-challenger-deep t))
-  ;; (load-theme 'doom-nord-light t))
-  ;; (load-theme 'leuven' t))
+  (load-theme 'doom-nord-light t))
+  ;;(load-theme 'doom-challenger-deep t))
+  ;;(load-theme 'leuven' t))
 
 (use-package editorconfig
 :config
@@ -215,3 +215,16 @@
           "<DEL>" #'helm-find-files-up-one-level)))
 
 (load! "bindings" doom-private-dir)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("7e5d400035eea68343be6830f3de7b8ce5e75f7ac7b8337b5df492d023ee8483" "1de8de5dddd3c5138e134696180868490c4fc86daf9780895d8fc728449805f3" default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: lambda-with-body
+# uuid: lambda-with-body
+# key: ^}
+# --
+() => {
+  $1
+}
